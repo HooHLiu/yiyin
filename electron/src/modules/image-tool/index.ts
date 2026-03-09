@@ -369,9 +369,25 @@ export class ImageTool extends Event {
     const [p, r, j] = usePromise();
     let timer: NodeJS.Timeout;
 
+    // 限制生成宽高，生成后再缩放回来
+    let rate = 1;
+    if (this.material.bg.w > 10240) {
+      rate = 10240 / this.material.bg.w;
+    }
+
     const handler: Parameters<typeof genMainImgShadowQueue.on>[number] = async ({ id, data }) => {
       if (id === this.id) {
         fs.writeFileSync(this.outputFileNames.mask, Buffer.from(data.split(',')[1], 'base64'));
+
+        if (rate !== 1) {
+          await sharp(this.outputFileNames.mask)
+            .resize({ width: this.material.bg.w, height: this.material.bg.h, fit: 'fill' })
+            .toFormat('png')
+            .toFile(`${this.outputFileNames.mask}catch.png`);
+          fs.rmSync(this.outputFileNames.mask);
+          fs.renameSync(`${this.outputFileNames.mask}catch.png`, this.outputFileNames.mask);
+        }
+
         clearTimeout(timer);
         r(true);
         genMainImgShadowQueue.off(handler);
@@ -389,6 +405,7 @@ export class ImageTool extends Event {
       id: this.id,
       material: this.material,
       options: config.options,
+      rate,
     });
 
     return p;

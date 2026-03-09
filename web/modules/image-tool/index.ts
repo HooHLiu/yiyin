@@ -7,16 +7,23 @@ export class ImageTool {
 
   private material: Material;
 
+  private rate: number;
+
   constructor(opt: ImageToolOption) {
     this.opt = opt.options;
     this.material = opt.material;
+    this.rate = opt.rate;
+  }
+
+  scale(n: number) {
+    return Math.ceil(n * this.rate);
   }
 
   async genMainImgShadow() {
     const { opt } = this;
     const bgImg = await loadImage(this.material.bg.path);
     const mainImg = await loadImage(this.material.main[0].path);
-    const canvas = createCanvas(bgImg.width, bgImg.height);
+    const canvas = createCanvas(this.scale(bgImg.width), this.scale(bgImg.height));
     const ctx = canvas.getContext('2d');
 
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
@@ -39,9 +46,9 @@ export class ImageTool {
       ctx.fillStyle = 'black';
     }
 
-    const contentOffsetX = Math.round((canvas.width - mainImg.width) / 2);
-    const contentOffsetY = this.material.main[0].top;
-    const blur = opt.shadow_show ? mainImg.height * ((opt.shadow || 6) / 100) : 0;
+    const contentOffsetX = Math.round((canvas.width - this.scale(mainImg.width)) / 2);
+    const contentOffsetY = this.scale(this.material.main[0].top);
+    const blur = opt.shadow_show ? this.scale(mainImg.height) * ((opt.shadow || 6) / 100) : 0;
 
     if (blur) {
       ctx.shadowOffsetX = 0; // 阴影水平偏移
@@ -52,9 +59,9 @@ export class ImageTool {
 
     const rectX = contentOffsetX || ctx.shadowBlur;
     const rectY = contentOffsetY || ctx.shadowBlur;
-    const rectWidth = mainImg.width;
-    const rectHeight = mainImg.height;
-    const cornerRadius = opt.radius_show ? mainImg.height * ((opt.radius || 2.1) / 100) : 0;
+    const rectWidth = Math.floor(mainImg.width * this.rate);
+    const rectHeight = Math.floor(mainImg.height * this.rate);
+    const cornerRadius = opt.radius_show ? this.scale(mainImg.height) * ((opt.radius || 2.1) / 100) : 0;
 
     ctx.beginPath();
     ctx.moveTo(rectX + cornerRadius, rectY);

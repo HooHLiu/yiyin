@@ -1,6 +1,7 @@
 export interface ImageToolOption {
   material: Material
   options: OutputOption
+  rate: number
 }
 
 export interface OutputOption {
