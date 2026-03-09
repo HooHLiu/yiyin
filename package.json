@@ -80,7 +80,7 @@
     "mac": {
       "icon": "./icon/icon.icns",
       "category": "public.app-category.productivity",
-      "identity": "-"
+      "identity": null
     },
     "dmg": {
       "icon": "./icon/icon.icns",
