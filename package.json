@@ -79,7 +79,8 @@
     ],
     "mac": {
       "icon": "./icon/icon.icns",
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "identity": null
     },
     "dmg": {
       "icon": "./icon/icon.icns",

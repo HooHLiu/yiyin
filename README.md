@@ -12,6 +12,16 @@
 >
 > 可以在ISSUES中提出，或者[B站私信我](https://space.bilibili.com/94829489)(本人常住B站↖(^ω^)↗)
 
+## 注意⚠️
+
+由于macOS系统更新，从`macOS 10.15`版本开始，系统会默认阻止未签名的第三方应用运行，所以如果你下载的是`macOS`版本，请在打开软件前，先在终端中运行以下命令来解除限制：
+
+```bash
+sudo xattr -rd com.apple.quarantine /Applications/壹印.app
+```
+
+不解除限制会提示软件已损坏，无法打开
+
 ## 使用
 
 直接安装并打开软件
