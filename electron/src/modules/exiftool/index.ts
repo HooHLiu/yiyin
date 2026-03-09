@@ -115,11 +115,15 @@ export class ExifTool {
 
     if (exif.DateTimeOriginal) {
       const [date, hour] = exif.DateTimeOriginal.split(' ');
-      const d = new Date(`${date.replaceAll(':', '/')} ${hour}`);
-      if (Number.isNaN(d.getTime())) {
-        exif.DateTimeOriginal = '';
-      } else {
-        exif.DateTimeOriginal = formatDate('yyyy/MM/dd hh:mm:ss', d);
+      if (date && hour) {
+        // 剔除次秒(.16)和时区(+08:00等)，保留核心时间部分
+        const [time] = hour.split(/[+-Z.]/);
+        const d = new Date(`${date.replaceAll(':', '/')} ${time}`);
+        if (Number.isNaN(d.getTime())) {
+          exif.DateTimeOriginal = '';
+        } else {
+          exif.DateTimeOriginal = formatDate('yyyy/MM/dd hh:mm:ss', d);
+        }
       }
     }
 
