@@ -59,8 +59,8 @@ export class ImageTool {
 
     const rectX = contentOffsetX || ctx.shadowBlur;
     const rectY = contentOffsetY || ctx.shadowBlur;
-    const rectWidth = Math.floor(mainImg.width * this.rate);
-    const rectHeight = Math.floor(mainImg.height * this.rate);
+    const rectWidth = Math.floor(mainImg.width * this.rate) - 1;
+    const rectHeight = Math.floor(mainImg.height * this.rate) - 1;
     const cornerRadius = opt.radius_show ? this.scale(mainImg.height) * ((opt.radius || 2.1) / 100) : 0;
 
     ctx.beginPath();
