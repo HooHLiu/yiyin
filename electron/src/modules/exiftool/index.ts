@@ -117,7 +117,7 @@ export class ExifTool {
       const [date, hour] = exif.DateTimeOriginal.split(' ');
       if (date && hour) {
         // 剔除次秒(.16)和时区(+08:00等)，保留核心时间部分
-        const [time] = hour.split(/[+-Z.]/);
+        const [time] = hour.split(/[+-.]/);
         const d = new Date(`${date.replaceAll(':', '/')} ${time}`);
         if (Number.isNaN(d.getTime())) {
           exif.DateTimeOriginal = '';
