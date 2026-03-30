@@ -46,8 +46,8 @@ export class ImageTool {
       ctx.fillStyle = 'black';
     }
 
-    const contentOffsetX = Math.round((canvas.width - this.scale(mainImg.width)) / 2);
-    const contentOffsetY = this.scale(this.material.main[0].top);
+    const contentOffsetX = Math.round((canvas.width - this.scale(mainImg.width)) / 2) + 1;
+    const contentOffsetY = this.scale(this.material.main[0].top) + 1;
     const blur = opt.shadow_show ? this.scale(mainImg.height) * ((opt.shadow || 6) / 100) : 0;
 
     if (blur) {
