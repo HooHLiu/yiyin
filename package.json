@@ -14,12 +14,12 @@
     "start": "vite",
     "build": "vite build",
     "tsc": "tsc --noEmit",
-    "package:dir": "yarn build && electron-builder -c electron-make.ts --dir",
     "package": "yarn build && electron-builder",
     "make": "yarn build && electron-builder -p never",
     "push:release": "node release.js",
     "push:dev": "node dev.js",
-    "fix": "eslint --fix"
+    "fix": "eslint --fix",
+    "release": "auto-release"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
@@ -101,6 +101,7 @@
     "win": {
       "icon": "./icon/icon.ico",
       "target": [
+        "msi",
         "nsis"
       ]
     },
