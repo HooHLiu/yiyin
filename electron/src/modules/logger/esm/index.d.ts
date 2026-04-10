@@ -1,4 +1,4 @@
-export { setLoggerConfig } from './src/config';
-export { Logger } from './src/logger';
-export { Options, LoggerOptions, TExportModel } from './src/interface';
-export declare const closeAllLogger: () => Promise<void>;
+export { setLoggerConfig } from './src/config'
+export { LoggerOptions, Options, TExportModel } from './src/interface'
+export { Logger } from './src/logger'
+export declare const closeAllLogger: () => Promise<void>

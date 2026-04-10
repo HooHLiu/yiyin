@@ -1,4 +1,4 @@
-import type { IFont, IPosition } from '@src/interface';
+import type { IFont, IPosition } from '@src/interface'
 
 export interface ITemp {
   key: string
@@ -61,7 +61,7 @@ export const defTemps: ITemp[] = [
       caseType: 'default',
     },
   },
-];
+]
 
 export function getDefTemp(d?: ITemp): ITemp {
   return {
@@ -88,5 +88,5 @@ export function getDefTemp(d?: ITemp): ITemp {
       bottom: null,
       ...d?.position,
     },
-  };
+  }
 }

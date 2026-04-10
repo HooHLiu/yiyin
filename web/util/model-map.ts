@@ -1,43 +1,43 @@
-import { toRoman, charToNumberChar } from './util';
+import { charToNumberChar, toRoman } from './util'
 
-type StrToStrFn = (str: string) => string;
+type StrToStrFn = (str: string) => string
 
 interface IFilter {
-  make_filter?: StrToStrFn;
+  make_filter?: StrToStrFn
 
-  model_filter?: StrToStrFn;
+  model_filter?: StrToStrFn
 }
 
 export default {
   INIT: {
-    make_filter: (e) => e?.replace('CORPORATION', ''),
+    make_filter: e => e?.replace('CORPORATION', ''),
   },
   DEF: {
-    make_filter: (s) => charToNumberChar(s[0] + s.slice(1).toLowerCase()),
-    model_filter: (e) => charToNumberChar(e.toLowerCase()),
+    make_filter: s => charToNumberChar(s[0] + s.slice(1).toLowerCase()),
+    model_filter: e => charToNumberChar(e.toLowerCase()),
   },
   NIKON: {
     model_filter: (str) => {
-      str = str.replace(/[Zz]/g, 'ℤ');
+      str = str.replace(/Z/gi, 'ℤ')
 
-      const arr = str.split('_');
+      const arr = str.split('_')
       if (arr.length > 1) {
-        const i = arr.pop();
+        const i = arr.pop()
         if (i && !Number.isNaN(+i)) {
-          return `${arr.join(' ')} ${toRoman(+i)}`;
+          return `${arr.join(' ')} ${toRoman(+i)}`
         }
 
-        return `${arr.join(' ')} ${i}`;
+        return `${arr.join(' ')} ${i}`
       }
 
-      return str;
+      return str
     },
   },
   SONY: {
     model_filter(str) {
-      str = str.replace('ILCE-', 'α ');
+      str = str.replace('ILCE-', 'α ')
 
-      return str.toLowerCase();
+      return str.toLowerCase()
     },
   },
-} as Record<string, IFilter>;
+} as Record<string, IFilter>

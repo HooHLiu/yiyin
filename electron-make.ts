@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
-import { Configuration } from 'electron-builder';
+import type { Configuration } from 'electron-builder'
 
-const outputFileNameTemp = 'yiyin-${version}-${platform}-${arch}.${ext}';
+const outputFileNameTemp = 'yiyin-${version}-${platform}-${arch}.${ext}'
 
 export default {
   appId: 'com.ggchivalrous.yiyin',
@@ -65,4 +65,4 @@ export default {
       'rpm',
     ],
   },
-} as Configuration;
+} as Configuration

@@ -1,4 +1,5 @@
-import { IConfig } from '@src/interface';
+import type { IConfig } from '@src/interface'
+import type { Buffer } from 'node:buffer'
 
 export interface ImageToolOption {
   outputOption: OutputOption

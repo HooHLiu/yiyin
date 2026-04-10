@@ -1,6 +1,6 @@
-import type { ITemp } from '@common/const/def-temps';
-import type { Exif } from '@modules/exiftool/interface';
-import type { IConfig, IFieldInfoItem } from '@src/interface';
+import type { ITemp } from '@common/const/def-temps'
+import type { Exif } from '@modules/exiftool/interface'
+import type { IConfig, IFieldInfoItem } from '@src/interface'
 
 export interface TextToolOption extends Pick<IConfig, 'options' | 'temps'> {
   exif: Exif

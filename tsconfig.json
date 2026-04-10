@@ -1,26 +1,15 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "declaration": true,
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
     "lib": [
       "ESNext",
       "DOM"
     ],
-    "esModuleInterop": true,
-    "noImplicitThis": false,
-    "allowJs": true,
-    "sourceMap": true,
-    "strict": true,
-    "noEmit": false,
-    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
+    "experimentalDecorators": true,
     "baseUrl": ".",
-    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
     "paths": {
       "@web/*": ["web/*"],
       "@common/*": ["common/*"],
@@ -35,20 +24,31 @@
       "@config": ["electron/src/config.ts"],
       "@router": ["electron/src/router"],
       "@root/*": ["electron/*"],
-      "@/*": ["*"],
+      "@/*": ["*"]
     },
-    "strictNullChecks": false,
+    "resolveJsonModule": true,
     "types": [
       "node",
       "vite/client",
       "electron"
-    ]
+    ],
+    "allowJs": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "noImplicitThis": false,
+    "declaration": true,
+    "noEmit": false,
+    "outDir": "dist",
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": [
     "*.ts",
     "**/*.ts",
     "**/*.svelte",
-    "*.svelte",
+    "*.svelte"
   ],
   "exclude": [
     "node_modules",

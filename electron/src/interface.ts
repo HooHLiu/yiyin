@@ -1,6 +1,6 @@
-import type { OutputOption } from '@modules/image-tool/interface';
+import type { OutputOption } from '@modules/image-tool/interface'
 
-import type { ITemp } from '@/common/const/def-temps';
+import type { ITemp } from '@/common/const/def-temps'
 
 export interface IConfig {
   version: string

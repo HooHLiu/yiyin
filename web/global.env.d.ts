@@ -1,3 +1,3 @@
 interface Window {
-  api: Record<string, any>;
+  api: Record<string, any>
 }

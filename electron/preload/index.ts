@@ -1,38 +1,40 @@
-import routerConfig from '@root/router-config';
-import { contextBridge, ipcRenderer } from 'electron';
+import routerConfig from '@root/router-config'
+import { contextBridge, ipcRenderer } from 'electron'
 
 function generateRouter(config: any): string[] {
-  const list = [];
+  const list = []
   for (const key in config) {
-    if (Object.prototype.hasOwnProperty.call(config, key)) {
-      const path = config[key];
+    if (Object.hasOwn(config, key)) {
+      const path = config[key]
       if (typeof path === 'object') {
-        list.push(...generateRouter(path));
-      } else {
-        list.push(path);
+        list.push(...generateRouter(path))
+      }
+      else {
+        list.push(path)
       }
     }
   }
-  return list;
+  return list
 }
 
 if (import.meta.env.DEV) {
-  // eslint-disable-next-line no-console
   console.log('页面挂载路由: ', generateRouter(routerConfig).reduce((o, i) => {
     if (i.startsWith('on:')) {
-      o[i] = (cb: any) => ipcRenderer.on(i, cb);
-    } else {
-      o[i] = () => ipcRenderer.invoke(i);
+      o[i] = (cb: any) => ipcRenderer.on(i, cb)
     }
-    return o;
-  }, {} as any));
+    else {
+      o[i] = () => ipcRenderer.invoke(i)
+    }
+    return o
+  }, {} as any))
 }
 
 contextBridge.exposeInMainWorld('api', generateRouter(routerConfig).reduce((o, i) => {
   if (i.startsWith('on:')) {
-    o[i] = (cb: any) => ipcRenderer.on(i, (e, d) => cb(d, e));
-  } else {
-    o[i] = (data: any) => ipcRenderer.invoke(i, data);
+    o[i] = (cb: any) => ipcRenderer.on(i, (e, d) => cb(d, e))
   }
-  return o;
-}, {} as any));
+  else {
+    o[i] = (data: any) => ipcRenderer.invoke(i, data)
+  }
+  return o
+}, {} as any))

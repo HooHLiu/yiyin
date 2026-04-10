@@ -34,4 +34,4 @@ export default {
     genTextImg: 'on:genTextImg',
     genMainImgShadow: 'on:genMainImgShadow',
   },
-};
+}

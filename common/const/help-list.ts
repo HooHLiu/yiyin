@@ -45,4 +45,4 @@ export const help: {
     title: '为什么输出的图片小小个的？',
     desc: 'Raw格式图片输出是有问题的，建议使用常用的jpg、png',
   },
-];
+]
