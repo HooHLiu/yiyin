@@ -43,6 +43,7 @@ export const DefaultConfig: IConfig = {
     text_margin: 0.4,
     quality: 100,
     mini_top_bottom_margin: 0,
+    bg_blur: 100,
   },
 
   tempFields: [getDefOptionItem('')],

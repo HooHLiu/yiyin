@@ -1,3 +1,5 @@
+@import '../../../app.scss';
+
 .app-action-wrap {
   width: 100%;
   display: flex;
@@ -129,5 +131,39 @@
   .switch {
     transform: rotate(90deg);
     cursor: pointer;
+  }
+
+  /* 滑块拟态样式优化 */
+  .db-slider {
+    -webkit-appearance: none;
+    width: 60px;
+    height: 12px;
+    background: transparent;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+    vertical-align: middle;
+    @include grass-inset(2px, 4px);
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--bg-color);
+      border-radius: 50%;
+      cursor: pointer;
+      @include grass(2px, 4px);
+      transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    &:active::-webkit-slider-thumb {
+      transform: scale(0.95);
+      background: var(--active-color);
+    }
   }
 }

@@ -330,7 +330,7 @@ export class ImageTool extends Event {
      */
     // 模糊
     ffmpeg.input(toFilePath)
-      .outputOptions('-vf', `boxblur=${this.blur}:2`)
+      .outputOptions('-vf', `boxblur=${Math.ceil(this.blur * ((this.outputOpt.bg_blur || 100) / 100))}:2`)
       .saveToFile(toFilePath)
       .on('end', () => r(true))
       .on('error', (e) => {

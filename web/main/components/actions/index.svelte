@@ -285,6 +285,33 @@
       <input class='input' style='width: 40px; margin-left: 5px;' type='text' bind:value={$config.options.bg_rate.h} />
     </ActionItem>
 
+    <ActionItem {labelWidth} title='背景模糊'>
+      <svelte:fragment slot='popup'>
+        指定背景图片的模糊程度
+        <br>
+        取值范围: 0 - 100
+        <br>
+        默认值: 15
+      </svelte:fragment>
+      <input
+        class='db-slider'
+        type='range'
+        min='0'
+        max='100'
+        step='1'
+        bind:value={$config.options.bg_blur}
+        style='margin-right: 8px;'
+      />
+      <input
+        class='input'
+        type='text'
+        value={$config.options.bg_blur}
+        style='width: 30px;'
+        on:change={v => onNumInputChange(v, 'bg_blur', 100, 0, 0)}
+      />
+      <span style="font-size: 12px; margin-left: 2px;">%</span>
+    </ActionItem>
+
     <ActionItem {labelWidth} title='纯色背景'>
       <svelte:fragment slot='popup'>使用纯色背景，默认使用图片模糊做背景</svelte:fragment>
       <Switch bind:value={$config.options.solid_bg} />

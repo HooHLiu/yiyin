@@ -1,5 +1,6 @@
 import type { IConfig } from '../main/interface'
 import { Message } from '@ggchivalrous/db-ui'
+import { DefaultConfig } from '@src/config'
 
 import { writable } from 'svelte/store'
 
@@ -8,6 +9,10 @@ let loadConfig = false
 
 export const config = writable<IConfig>({
   options: {
+    main_img_w_rate: 90,
+    text_margin: 0.4,
+    quality: 100,
+    mini_top_bottom_margin: 0,
     iot: false,
     landscape: false,
     solid_bg: false,
@@ -22,6 +27,8 @@ export const config = writable<IConfig>({
       w: 0,
       h: 0,
     },
+    bg_blur: 100,
+    solid_color: '#fff',
   },
   fontMap: {},
   fontDir: '',

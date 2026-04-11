@@ -52,6 +52,11 @@ export interface OutputOption {
   shadow_show: boolean
 
   /**
+   * 背景模糊程度
+   */
+  bg_blur: number
+
+  /**
    * 选中的字体
    */
   font: string
