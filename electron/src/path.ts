@@ -1,17 +1,17 @@
-import { join } from 'node:path';
-import os from 'os';
+import os from 'node:os'
+import { join } from 'node:path'
 
-import { tryCatch } from '@utils';
-import { app } from 'electron';
+import { tryCatch } from '@utils'
+import { app } from 'electron'
 
-const env = import.meta.env;
-const isDev = env.DEV;
+const env = import.meta.env
+const isDev = env.DEV
 
-export const appPath = app.getAppPath();
-export const userDataPath = tryCatch(() => app.getPath('userData'), appPath);
-export const desktopPath = tryCatch(() => app.getPath('desktop'), userDataPath);
+export const appPath = app.getAppPath()
+export const userDataPath = tryCatch(() => app.getPath('userData'), appPath)
+export const desktopPath = tryCatch(() => app.getPath('desktop'), userDataPath)
 export function getPath(name: Parameters<typeof app.getPath>[0]) {
-  return tryCatch(() => app.getPath(name), desktopPath, () => {});
+  return tryCatch(() => app.getPath(name), desktopPath, () => {})
 }
 
 const paths = {
@@ -21,9 +21,9 @@ const paths = {
   logger: join(userDataPath, 'logs'),
   logo: '',
   exiftool: join(isDev ? env.VITE_DIST_ELECTRON : app.getAppPath(), 'exiftool', os.platform() === 'win32' ? 'exiftool.exe' : 'exiftool'),
-};
+}
 
-paths.public = isDev ? env.VITE_PUBLIC : paths.web;
-paths.logo = join(paths.public, 'logo');
+paths.public = isDev ? env.VITE_PUBLIC : paths.web
+paths.logo = join(paths.public, 'logo')
 
-export default paths;
+export default paths

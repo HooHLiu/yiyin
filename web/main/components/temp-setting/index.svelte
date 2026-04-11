@@ -1,16 +1,17 @@
-<script lang="ts">
-  import './index.scss';
-  import { cpObj } from '@common/utils';
-  import { Drawer } from '@ggchivalrous/db-ui';
-  import { config } from '@web/store/config';
+<script lang='ts'>
+  import type { ITemp } from '@/common/const/def-temps'
+  import { cpObj } from '@common/utils'
+  import { Drawer } from '@ggchivalrous/db-ui'
+  import { config } from '@web/store/config'
+  import { getDefTemp } from '@/common/const/def-temps'
 
-  import Dialog from './dialog.svelte';
-  import Item from './item.svelte';
+  import Dialog from './dialog.svelte'
+  import Item from './item.svelte'
 
-  import { getDefTemp, type ITemp } from '@/common/const/def-temps';
+  import './index.scss'
 
-  export let visible = false;
-  export let beforeClose: any = null;
+  export let visible = false
+  export let beforeClose: any = null
 
   const dialog: {
     visible: boolean
@@ -18,53 +19,53 @@
   } = {
     visible: false,
     data: null,
-  };
+  }
 
   function onShowChange(e: CustomEvent<ITemp>) {
-    const data = e.detail;
+    const data = e.detail
     config.update((v) => {
-      const item = v.temps.find((i) => i.key === data.key);
+      const item = v.temps.find(i => i.key === data.key)
       if (item) {
-        item.use = data.use;
+        item.use = data.use
       }
-      return v;
-    });
+      return v
+    })
   }
 
   function onEdit(e: CustomEvent<ITemp>) {
-    dialog.visible = true;
-    dialog.data = cpObj(e.detail);
+    dialog.visible = true
+    dialog.data = cpObj(e.detail)
   }
 
   function onDel(e: CustomEvent<ITemp>) {
     config.update((v) => {
-      const index = v.temps.findIndex((i) => i.key === e.detail.key);
+      const index = v.temps.findIndex(i => i.key === e.detail.key)
       if (index !== -1) {
-        v.temps.splice(index, 1);
+        v.temps.splice(index, 1)
       }
-      return v;
-    });
+      return v
+    })
   }
 
   function addTemp() {
-    dialog.data = getDefTemp();
-    dialog.visible = true;
+    dialog.data = getDefTemp()
+    dialog.visible = true
   }
 </script>
 
 <Drawer
-  size="500px"
-  title="文本模板设置"
+  size='500px'
+  title='文本模板设置'
   bind:visible
-  direction="rtl"
+  direction='rtl'
   {beforeClose}
   modal={false}
 >
-  <div class="temp-setting-wrap">
-    <div class="temp-setting-head">
-      <i class="button icon db-icon-plus" on:click={addTemp} on:keypress role="button" tabindex="-1"></i>
+  <div class='temp-setting-wrap'>
+    <div class='temp-setting-head'>
+      <i class='button icon db-icon-plus' on:click={addTemp} on:keypress role='button' tabindex='-1'></i>
     </div>
-    <div class="temp-item-wrap">
+    <div class='temp-item-wrap'>
       {#each $config.temps as i, j (i.key)}
         <Item
           data={i}

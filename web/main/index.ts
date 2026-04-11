@@ -1,10 +1,10 @@
-import '../app.scss';
-import '@ggchivalrous/db-ui/components/theme/index.css';
+import App from './app.svelte'
+import '../app.scss'
 
-import App from './app.svelte';
+import '@ggchivalrous/db-ui/components/theme/index.css'
 
 const app = new App({
   target: document.getElementById('app'),
-});
+})
 
-export default app;
+export default app

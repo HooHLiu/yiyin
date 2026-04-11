@@ -1,3 +1,5 @@
+import type { Buffer } from 'node:buffer'
+
 export interface ImageToolOption {
   material: Material
   options: OutputOption
@@ -48,6 +50,11 @@ export interface OutputOption {
   shadow: number
 
   shadow_show: boolean
+
+  /**
+   * 背景模糊程度
+   */
+  bg_blur: number
 
   /**
    * 选中的字体

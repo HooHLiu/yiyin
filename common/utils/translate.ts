@@ -1,4 +1,4 @@
-export const toRoman = (num: number) => {
+export function toRoman(num: number) {
   const romanNumerals = [
     { value: 1000, numeral: 'M' },
     { value: 900, numeral: 'CM' },
@@ -13,16 +13,16 @@ export const toRoman = (num: number) => {
     { value: 5, numeral: 'V' },
     { value: 4, numeral: 'IV' },
     { value: 1, numeral: 'I' },
-  ];
+  ]
 
-  let roman = '';
+  let roman = ''
 
   for (let i = 0; i < romanNumerals.length; i++) {
     while (num >= romanNumerals[i].value) {
-      roman += romanNumerals[i].numeral;
-      num -= romanNumerals[i].value;
+      roman += romanNumerals[i].numeral
+      num -= romanNumerals[i].value
     }
   }
 
-  return roman;
-};
+  return roman
+}

@@ -1,4 +1,5 @@
-import { IConfig } from '@src/interface';
+import type { IConfig } from '@src/interface'
+import type { Buffer } from 'node:buffer'
 
 export interface ImageToolOption {
   outputOption: OutputOption
@@ -80,6 +81,11 @@ export interface OutputOption {
    * 最小上下边距
    */
   mini_top_bottom_margin: number
+
+  /**
+   * 背景模糊
+   */
+  bg_blur: number
 }
 
 export interface OutputFilePaths {

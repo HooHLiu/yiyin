@@ -1,16 +1,17 @@
-import fs from 'fs';
-import { join, resolve } from 'path';
+import fs from 'node:fs'
+import { join, resolve } from 'node:path'
 
-import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { defineConfig } from 'vite';
-import electron from 'vite-plugin-electron';
-import renderer from 'vite-plugin-electron-renderer';
+import process from 'node:process'
+import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+import { defineConfig } from 'vite'
+import electron from 'vite-plugin-electron'
 
-import pkg from './package.json';
-import installExiftool from './scripts/install-exiftool';
+import renderer from 'vite-plugin-electron-renderer'
+import pkg from './package.json'
+import installExiftool from './scripts/install-exiftool'
 
-const electronOutDir = join(__dirname, 'dist-electron');
-const electronPkg = join(electronOutDir, 'package.json');
+const electronOutDir = join(__dirname, 'dist-electron')
+const electronPkg = join(electronOutDir, 'package.json')
 const electronAlias = {
   '@': __dirname,
   '@root': resolve(__dirname, 'electron'),
@@ -19,37 +20,37 @@ const electronAlias = {
   '@modules': resolve(__dirname, 'electron/src/modules'),
   '@utils': resolve(__dirname, 'electron/src/utils'),
   '@router': resolve(__dirname, 'electron/src/router'),
-};
+}
 
 function objToEnvStr(obj: Record<string, any>) {
-  const arr: string[] = [];
+  const arr: string[] = []
 
   for (const k in obj) {
-    arr.push(`VITE_${k}=${obj[k]}`);
+    arr.push(`VITE_${k}=${obj[k]}`)
   }
 
-  return arr.join('\n');
+  return arr.join('\n')
 }
 
 export default defineConfig(async ({ command }) => {
-  const port = 5173;
-  const isServe = command === 'serve';
-  const isBuild = command === 'build';
-  const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
+  const port = 5173
+  const isServe = command === 'serve'
+  const isBuild = command === 'build'
+  const sourcemap = isServe || !!process.env.VSCODE_DEBUG
 
   const env: Record<string, any> = {
     VERSION: pkg.version,
     DIST_ELECTRON: electronOutDir,
     WEB: join(electronOutDir, 'web'),
     URL: isServe ? `http://localhost:${port}` : '',
-  };
+  }
 
-  env.PUBLIC = isServe ? join(__dirname, 'web/public') : env.WEB;
-  env.EXIFTOOL = env.DIST_ELECTRON;
+  env.PUBLIC = isServe ? join(__dirname, 'web/public') : env.WEB
+  env.EXIFTOOL = env.DIST_ELECTRON
 
-  fs.writeFileSync(join(__dirname, '.env.local'), objToEnvStr(env));
+  fs.writeFileSync(join(__dirname, '.env.local'), objToEnvStr(env))
   if (!fs.existsSync(electronOutDir)) {
-    fs.mkdirSync(electronOutDir);
+    fs.mkdirSync(electronOutDir)
   }
 
   // electron输出目录添加package文件
@@ -57,10 +58,10 @@ export default defineConfig(async ({ command }) => {
     ...pkg,
     main: 'main/index.js',
     type: 'commonjs',
-  }, null, 2));
+  }, null, 2))
 
   // exiftool工具打包进来
-  await installExiftool(env.DIST_ELECTRON);
+  await installExiftool(env.DIST_ELECTRON)
 
   return {
     root: 'web',
@@ -71,9 +72,10 @@ export default defineConfig(async ({ command }) => {
           entry: 'electron/main/index.ts',
           onstart(options) {
             if (process.env.VSCODE_DEBUG) {
-              console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App');
-            } else {
-              options.startup();
+              console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
+            }
+            else {
+              options.startup()
             }
           },
           vite: {
@@ -94,7 +96,7 @@ export default defineConfig(async ({ command }) => {
         {
           entry: 'electron/preload/index.ts',
           onstart(options) {
-            options.reload();
+            options.reload()
           },
           vite: {
             resolve: {
@@ -142,5 +144,5 @@ export default defineConfig(async ({ command }) => {
       },
       extensions: ['.js', '.mjs', '.svelte', '.ts'],
     },
-  };
-});
+  }
+})

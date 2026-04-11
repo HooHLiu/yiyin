@@ -15,7 +15,7 @@
       display: inline-block;
       font-weight: bold;
       margin-right: 8px;
-      
+
       &.left {
         text-align: left;
       }
@@ -41,21 +41,21 @@
       justify-content: space-around;
       align-items: center;
     }
-    
+
     .config-value img {
       display: inline-block;
       height: 12px;
     }
-    
+
     .config-value img:last-of-type {
       margin-left: 10px;
     }
-    
+
     .icon {
       color: var(--text-color);
       padding: 0 4px;
     }
-    
+
     .icon:hover {
       cursor: pointer;
       font-weight: bold;
@@ -63,4 +63,3 @@
     }
   }
 }
-

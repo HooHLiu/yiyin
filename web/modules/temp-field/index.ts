@@ -1,8 +1,8 @@
-import { ExifFormat } from '@common/modules/exif-format';
-import type { IFieldInfoItem } from '@src/interface';
-import { loadImage } from '@web/util/util';
+import type { IFieldInfoItem } from '@src/interface'
+import type { ITemp } from '@/common/const/def-temps'
+import { ExifFormat } from '@common/modules/exif-format'
 
-import type { ITemp } from '@/common/const/def-temps';
+import { loadImage } from '@web/util/util'
 
 interface GetFieldTempInfoOpt {
   bgHeight: number
@@ -15,8 +15,8 @@ interface GetFieldTempInfoOpt {
  * @param exifInfo - 读取到的相机信息
  */
 export async function getFieldTempInfo(exifInfo: Record<string, any>, opt: GetFieldTempInfoOpt) {
-  const tempFieldRecord: Record<string, IFieldInfoItem> = {};
-  const fileds = opt.fields;
+  const tempFieldRecord: Record<string, IFieldInfoItem> = {}
+  const fileds = opt.fields
 
   for (const filed of fileds) {
     tempFieldRecord[filed.key] = {
@@ -25,10 +25,10 @@ export async function getFieldTempInfo(exifInfo: Record<string, any>, opt: GetFi
         ...filed.font,
         size: filed.font.size ? Math.round(opt.bgHeight * (filed.font.size / 100)) : 0,
       },
-    };
+    }
   }
 
-  return fillTempFieldInfo(tempFieldRecord, opt.logoPath, exifInfo);
+  return fillTempFieldInfo(tempFieldRecord, opt.logoPath, exifInfo)
 }
 
 interface IGetTempsConfOpts {
@@ -38,7 +38,7 @@ interface IGetTempsConfOpts {
 }
 
 export function getTextTempList(temps: ITemp[], opts?: IGetTempsConfOpts): ITemp[] {
-  return temps.map((temp) => ({
+  return temps.map(temp => ({
     ...temp,
     font: {
       ...temp.font,
@@ -46,62 +46,62 @@ export function getTextTempList(temps: ITemp[], opts?: IGetTempsConfOpts): ITemp
       color: temp.font.color || opts.color,
       size: opts.bgHeight * (temp.font.size / 100),
     },
-  })).filter((i) => i.use);
+  })).filter(i => i.use)
 }
 
 /**
  * 模版 Field 对象信息填充
  * @param tempFieldConf
+ * @param logoPath
  * @param exifInfo - 规范化的相机信息对象
- * @returns
  */
 async function fillTempFieldInfo(
   tempFieldConf: Record<string, IFieldInfoItem>,
   logoPath: string,
   exifInfo?: Record<string, any>,
 ) {
-  const exif = new ExifFormat(exifInfo || {});
-  const tempFieldInfo: Record<string, IFieldInfoItem> = {};
+  const exif = new ExifFormat(exifInfo || {})
+  const tempFieldInfo: Record<string, IFieldInfoItem> = {}
 
   for (const field in tempFieldConf) {
-    const info = tempFieldConf[field];
+    const info = tempFieldConf[field]
 
     if (!tempFieldInfo[field]) {
-      const _k = field as keyof typeof exif._;
+      const _k = field as keyof typeof exif._
       const _info: IFieldInfoItem = {
         ...info,
         type: 'text',
         bImg: '',
         wImg: '',
         value: exif._[_k]?.() || '',
-      };
-      tempFieldInfo[field] = JSON.parse(JSON.stringify(_info));
+      }
+      tempFieldInfo[field] = JSON.parse(JSON.stringify(_info))
 
       if (field === 'Make' && exif.oriExif.Make) {
-        const wImg = `file://${logoPath}/${exif.oriExif.Make.toLowerCase()}-w.svg`;
-        const bImg = `file://${logoPath}/${exif.oriExif.Make.toLowerCase()}-b.svg`;
+        const wImg = `file://${logoPath}/${exif.oriExif.Make.toLowerCase()}-w.svg`
+        const bImg = `file://${logoPath}/${exif.oriExif.Make.toLowerCase()}-b.svg`
 
         if (await loadImage(wImg).catch(() => false)) {
-          tempFieldInfo[field].wImg = wImg;
-          tempFieldInfo[field].type = 'img';
+          tempFieldInfo[field].wImg = wImg
+          tempFieldInfo[field].type = 'img'
         }
 
         if (await loadImage(bImg).catch(() => false)) {
-          tempFieldInfo[field].bImg = bImg;
-          tempFieldInfo[field].type = 'img';
+          tempFieldInfo[field].bImg = bImg
+          tempFieldInfo[field].type = 'img'
         }
       }
     }
 
     // 强制使用则看该配置是否启动 || 非强制使用则看是否有原始相机信息
     if (info.use && (info.forceUse || !tempFieldInfo[field].value)) {
-      tempFieldInfo[field].type = info.type || 'text';
-      tempFieldInfo[field].value = `${info.value || ''}`;
-      tempFieldInfo[field].bImg = `${info.bImg || ''}`;
-      tempFieldInfo[field].wImg = `${info.wImg || ''}`;
-      tempFieldInfo[field].font = info.font || tempFieldInfo[field].font;
+      tempFieldInfo[field].type = info.type || 'text'
+      tempFieldInfo[field].value = `${info.value || ''}`
+      tempFieldInfo[field].bImg = `${info.bImg || ''}`
+      tempFieldInfo[field].wImg = `${info.wImg || ''}`
+      tempFieldInfo[field].font = info.font || tempFieldInfo[field].font
     }
   }
 
-  return tempFieldInfo;
+  return tempFieldInfo
 }

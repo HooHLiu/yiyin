@@ -1,7 +1,7 @@
-import type { Exif } from '@modules/exiftool/interface';
-import type { IConfig as Config } from '@src/interface';
+import type { Exif } from '@modules/exiftool/interface'
+import type { IConfig as Config } from '@src/interface'
 
-export * from '@src/interface';
+export * from '@src/interface'
 
 export interface IFileInfo {
   id?: string
@@ -19,7 +19,7 @@ export interface IConfig extends Pick<
 }
 
 export type TInputEvent = Event & {
-  currentTarget: EventTarget & HTMLInputElement;
+  currentTarget: EventTarget & HTMLInputElement
 }
 
 export interface ImgInfo extends IFileInfo {

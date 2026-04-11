@@ -1,14 +1,14 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import type { IConfig, IFieldInfoItem } from '@src/interface'
+import fs from 'node:fs'
 
-import type { IFieldInfoItem, IConfig } from '@src/interface';
+import path from 'node:path'
 
-import { userDataPath, getPath } from './path';
+import { defTemps, exifFields, getDefTemp } from '@/common/const'
 
-import { exifFields, defTemps, getDefTemp } from '@/common/const';
-import { arrToObj, normalize, tryCatch } from '@/common/utils';
+import { arrToObj, normalize, tryCatch } from '@/common/utils'
+import { getPath, userDataPath } from './path'
 
-const needResetVer = ['1.5.0'];
+const needResetVer = ['1.5.0']
 
 export const DefaultConfig: IConfig = {
   version: import.meta.env.VITE_VERSION,
@@ -43,6 +43,7 @@ export const DefaultConfig: IConfig = {
     text_margin: 0.4,
     quality: 100,
     mini_top_bottom_margin: 0,
+    bg_blur: 100,
   },
 
   tempFields: [getDefOptionItem('')],
@@ -56,9 +57,9 @@ export const DefaultConfig: IConfig = {
     downloadLink: '',
     checkDate: 0,
   },
-};
+}
 
-export const config = getConfig();
+export const config = getConfig()
 
 function getDefOptionItem<T>(defV?: T, key = '', name = ''): IFieldInfoItem<T> {
   return {
@@ -80,41 +81,42 @@ function getDefOptionItem<T>(defV?: T, key = '', name = ''): IFieldInfoItem<T> {
       caseType: 'default',
       color: '',
     },
-  };
+  }
 }
 
 function getConfModel(): IConfig {
-  return JSON.parse(JSON.stringify(DefaultConfig));
+  return JSON.parse(JSON.stringify(DefaultConfig))
 }
 
 function getDefConf(): IConfig {
-  const conf = getConfModel();
-  conf.tempFields = exifFields.map((i) => getDefOptionItem(i.value, i.key, i.name));
-  conf.temps = defTemps.map((i) => getDefTemp(i));
-  conf.customTempFields = [];
-  return conf;
+  const conf = getConfModel()
+  conf.tempFields = exifFields.map(i => getDefOptionItem(i.value, i.key, i.name))
+  conf.temps = defTemps.map(i => getDefTemp(i))
+  conf.customTempFields = []
+  return conf
 }
 
 function normalizeConf(conf: IConfig) {
-  const confModel = getConfModel();
-  const _conf = normalize(conf, confModel);
-  return _conf;
+  const confModel = getConfModel()
+  const _conf = normalize(conf, confModel)
+  return _conf
 }
 
 export function getConfig(def = false) {
-  const _config: IConfig = getDefConf();
+  const _config: IConfig = getDefConf()
 
   if (!def && fs.existsSync(_config.dir)) {
-    const content = fs.readFileSync(_config.dir);
-    const fileConfig = tryCatch<Partial<IConfig>>(() => JSON.parse(content.toString()), {});
+    const content = fs.readFileSync(_config.dir)
+    const fileConfig = tryCatch<Partial<IConfig>>(() => JSON.parse(content.toString()), {})
 
     if (
       !fileConfig?.version
       // 升版本时重置配置信息
       || (needResetVer.includes(_config.version) && fileConfig.version < _config.version)
     ) {
-      console.log('重置配置信息');
-    } else {
+      console.log('重置配置信息')
+    }
+    else {
       Object.assign(_config, {
         output: fileConfig.output || _config.output,
         options: Object.assign(_config.options, fileConfig.options),
@@ -122,61 +124,61 @@ export function getConfig(def = false) {
         tempFields: fileConfig.tempFields || _config.tempFields,
         customTempFields: fileConfig.customTempFields || _config.customTempFields,
         temps: fileConfig.temps || _config.temps,
-      } as Partial<IConfig>);
+      } as Partial<IConfig>)
     }
 
     // 默认的内容需要单独处理
-    const tempFieldObj = arrToObj(_config.tempFields, 'key');
+    const tempFieldObj = arrToObj(_config.tempFields, 'key')
     for (const exifField of exifFields) {
       if (!tempFieldObj[exifField.key]) {
-        _config.tempFields.push(getDefOptionItem(exifField.value, exifField.key, exifField.name));
+        _config.tempFields.push(getDefOptionItem(exifField.value, exifField.key, exifField.name))
       }
     }
 
-    const tempObj = arrToObj(_config.temps, 'key');
+    const tempObj = arrToObj(_config.temps, 'key')
     for (const temp of defTemps) {
       if (!tempObj[temp.key]) {
-        _config.temps.push(getDefTemp(temp));
+        _config.temps.push(getDefTemp(temp))
       }
     }
 
-    Object.assign(_config, normalizeConf(_config));
+    Object.assign(_config, normalizeConf(_config))
   }
 
   if (import.meta.env.DEV) {
-    _config.cacheDir = path.join(_config.output, '.catch');
+    _config.cacheDir = path.join(_config.output, '.catch')
   }
 
   if (!fs.existsSync(_config.output)) {
     tryCatch(() => fs.mkdirSync(_config.output, { recursive: true }), null, () => {
-      _config.output = DefaultConfig.output;
-      _config.cacheDir = path.join(_config.output, '.catch');
-      fs.mkdirSync(_config.output, { recursive: true });
-    });
+      _config.output = DefaultConfig.output
+      _config.cacheDir = path.join(_config.output, '.catch')
+      fs.mkdirSync(_config.output, { recursive: true })
+    })
   }
 
   if (!fs.existsSync(_config.cacheDir)) {
-    fs.mkdirSync(_config.cacheDir, { recursive: true });
+    fs.mkdirSync(_config.cacheDir, { recursive: true })
   }
 
   if (!fs.existsSync(_config.staticDir)) {
-    fs.mkdirSync(_config.staticDir, { recursive: true });
+    fs.mkdirSync(_config.staticDir, { recursive: true })
   }
 
   if (!fs.existsSync(_config.font.dir)) {
-    fs.mkdirSync(_config.font.dir, { recursive: true });
+    fs.mkdirSync(_config.font.dir, { recursive: true })
   }
 
   if (fs.existsSync(_config.font.path)) {
-    const content = fs.readFileSync(_config.font.path);
-    const fontMap = tryCatch(() => JSON.parse(content.toString()), {});
-    _config.font.map = fontMap;
+    const content = fs.readFileSync(_config.font.path)
+    const fontMap = tryCatch(() => JSON.parse(content.toString()), {})
+    _config.font.map = fontMap
   }
 
-  return _config;
+  return _config
 }
 
 export function storeConfig(conf: Partial<IConfig>) {
-  Object.assign(config, normalizeConf(Object.assign(config, conf)));
-  fs.writeFileSync(config.dir, JSON.stringify(config, null, 2));
+  Object.assign(config, normalizeConf(Object.assign(config, conf)))
+  fs.writeFileSync(config.dir, JSON.stringify(config, null, 2))
 }
