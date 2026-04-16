@@ -59,13 +59,13 @@ export class TextTool {
             continue
           }
 
-          if (this.opt.options.solid_bg) {
-            if (fieldTemp.bImg && fieldTemp.bImg !== 'false') {
-              slotInfo.value = await loadImage(fieldTemp.bImg)
-            }
+          const imgPath = this.opt.options.solid_bg ? fieldTemp.bImg : fieldTemp.wImg
+          if (imgPath && imgPath !== 'false') {
+            slotInfo.value = await loadImage(imgPath).catch(() => '')
           }
-          else if (fieldTemp.wImg && fieldTemp.wImg !== 'false') {
-            slotInfo.value = await loadImage(fieldTemp.wImg)
+
+          if (!slotInfo.value) {
+            slotInfo.value = `${fieldTemp.value || ''}`.trim()
           }
 
           slotInfoList.push(slotInfo.value ? slotInfo : '')

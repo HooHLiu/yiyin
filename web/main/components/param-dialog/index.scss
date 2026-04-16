@@ -63,4 +63,44 @@
       height: 50px;
     }
   }
+
+  .camera-brand-list {
+    max-height: 104px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  .camera-brand-item {
+    width: 96px;
+    height: 28px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover,
+    &.active {
+      border-color: var(--active-border-color);
+      color: var(--active-color);
+    }
+
+    img {
+      max-width: 42px;
+      max-height: 16px;
+      margin-right: 6px;
+    }
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
+      font-size: 12px;
+    }
+  }
 }

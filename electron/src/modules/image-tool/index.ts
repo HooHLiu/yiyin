@@ -38,7 +38,11 @@ export class ImageTool extends Event {
 
   private outputOpt: IConfig['options']
 
+  private renderConfig: Pick<IConfig, 'options' | 'tempFields' | 'customTempFields' | 'temps'>
+
   private outputFileNames: OutputFilePaths
+
+  private previewMaxSize: number
 
   private meta: sharp.Metadata
 
@@ -70,6 +74,8 @@ export class ImageTool extends Event {
     this.path = path
     this.name = name
     this.outputOpt = opt.outputOption
+    this.renderConfig = opt.config || config
+    this.previewMaxSize = opt.preview ? opt.previewMaxSize || 720 : 0
     this.id = md5(`${md5(path)}${Math.random()}${Date.now()}`)
 
     const baseFilePath = join(opt.cachePath, this.id)
@@ -78,7 +84,7 @@ export class ImageTool extends Event {
       bg: `${baseFilePath}_bg.jpg`,
       main: `${baseFilePath}_main.jpg`,
       mask: `${baseFilePath}_mask.png`,
-      composite: join(opt.outputPath, getFileName(opt.outputPath, name)),
+      composite: opt.preview ? `${baseFilePath}_preview.jpg` : join(opt.outputPath, getFileName(opt.outputPath, name)),
     }
   }
 
@@ -96,6 +102,14 @@ export class ImageTool extends Event {
       h: imgInfo.height,
       resetW: imgInfo.width,
       resetH: imgInfo.height,
+    }
+
+    if (this.previewMaxSize) {
+      const rate = Math.min(1, this.previewMaxSize / Math.max(this.sizeInfo.w, this.sizeInfo.h))
+      this.sizeInfo.w = Math.max(1, Math.round(this.sizeInfo.w * rate))
+      this.sizeInfo.h = Math.max(1, Math.round(this.sizeInfo.h * rate))
+      this.sizeInfo.resetW = this.sizeInfo.w
+      this.sizeInfo.resetH = this.sizeInfo.h
     }
 
     const { outputOpt } = this
@@ -165,6 +179,25 @@ export class ImageTool extends Event {
     this.delCacheFile()
   }
 
+  async genPreview() {
+    try {
+      await this.init()
+      this.clacBgImgSize()
+      await this.genTextImg()
+      await this.genMainImg()
+      this.calcContentHeight()
+      await this.genBgImg()
+      await this.genMainImgShadow()
+      await this.composite()
+
+      const buf = fs.readFileSync(this.outputFileNames.composite)
+      return `data:image/jpeg;base64,${buf.toString('base64')}`
+    }
+    finally {
+      this.delCacheFile(true)
+    }
+  }
+
   async genBgImg() {
     const toFilePath: string = this.outputFileNames.bg
     this.clacBgImgSize(this.contentH)
@@ -186,6 +219,7 @@ export class ImageTool extends Event {
     if (!this.isInit) throw NotInit
     await sharp(this.path)
       .rotate()
+      .resize({ width: this.sizeInfo.w, height: this.sizeInfo.h, fit: 'fill' })
       .withMetadata({ density: this.meta.density })
       .toFormat('jpeg', { quality: 100 })
       .toFile(toFilePath)
@@ -240,9 +274,9 @@ export class ImageTool extends Event {
       id: this.id,
       exif: this.exif || {},
       bgHeight: this.material.bg.h,
-      options: config.options,
-      fields: [...config.tempFields, ...config.customTempFields],
-      temps: config.temps,
+      options: this.renderConfig.options,
+      fields: [...this.renderConfig.tempFields, ...this.renderConfig.customTempFields],
+      temps: this.renderConfig.temps,
       logoPath: paths.logo,
     })
 
@@ -359,9 +393,9 @@ export class ImageTool extends Event {
       .toFile(toFilePath)
   }
 
-  private delCacheFile() {
+  private delCacheFile(includeComposite = false) {
     for (const k in this.outputFileNames) {
-      if (k === 'composite') continue
+      if (k === 'composite' && !includeComposite) continue
 
       const _path = (this.outputFileNames as any)[k]
       if (fs.existsSync(_path)) {
@@ -409,7 +443,7 @@ export class ImageTool extends Event {
     mainApp.win.webContents.send(routerConfig.on.genMainImgShadow, {
       id: this.id,
       material: this.material,
-      options: config.options,
+      options: this.renderConfig.options,
       rate,
     })
 

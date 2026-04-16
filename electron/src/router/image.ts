@@ -20,6 +20,11 @@ interface ImgInfo {
   name: string
 }
 
+interface PreviewData extends StartTaskData {
+  config: typeof config
+  maxSize?: number
+}
+
 r.listen<StartTaskData[], ImgInfo[]>(routerConfig.addTask, async (fileUrlList) => {
   const imgList: ImgInfo[] = []
 
@@ -46,6 +51,25 @@ r.listen<void, boolean>(routerConfig.startTask, async () => {
 })
 
 r.listen(routerConfig.drainQueue, async () => imageToolQueue.drain())
+
+r.listen<PreviewData, string>(routerConfig.genPreview, async (data) => {
+  const previewConfig = data.config || config
+  const tool = new ImageTool(data.path, data.name, {
+    cachePath: config.cacheDir,
+    outputOption: cpObj(previewConfig.options),
+    outputPath: config.cacheDir,
+    preview: true,
+    previewMaxSize: data.maxSize || 720,
+    config: {
+      options: cpObj(previewConfig.options),
+      tempFields: cpObj(previewConfig.tempFields),
+      customTempFields: cpObj(previewConfig.customTempFields),
+      temps: cpObj(previewConfig.temps),
+    },
+  })
+
+  return tool.genPreview()
+})
 
 r.listen(routerConfig.genTextImg, async (data: any) => genTextImgQueue.add(data))
 

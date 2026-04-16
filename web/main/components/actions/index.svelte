@@ -3,8 +3,7 @@
   import { arrToObj, roundDecimalPlaces } from '@common/utils'
   import { ActionItem } from '@components'
   import { ColorPicker, Message, Switch } from '@ggchivalrous/db-ui'
-  import { PreviewTool } from '@web/modules/preview-tool'
-  import { config, pathInfo } from '@web/store/config'
+  import { config } from '@web/store/config'
 
   import { smoothIncrement } from '@web/util/util'
 
@@ -27,7 +26,7 @@
   $: onFileInfoList(fileInfoList)
   $: getHandleCount(imgInfoRecord)
   $: syncPreviewFile(fileInfoList)
-  $: schedulePreview(fileInfoList, previewFileId, $config, $pathInfo.logo)
+  $: schedulePreview(fileInfoList, previewFileId, $config)
 
   window.api['on:progress']((data: Pick<ImgInfo, 'id' | 'progress'>) => {
     if (imgInfoRecord[data.id]) {
@@ -90,10 +89,10 @@
     previewFileId = id
   }
 
-  function schedulePreview(list: IFileInfo[], fileId: string, conf: IConfig, logoPath: string) {
+  function schedulePreview(list: IFileInfo[], fileId: string, conf: IConfig) {
     const file = list.find(i => i.id === fileId)
 
-    if (!file?.id || !logoPath) {
+    if (!file?.id) {
       previewKey = ''
       previewImg = ''
       previewLoading = false
@@ -108,7 +107,6 @@
       tempFields: conf.tempFields,
       customTempFields: conf.customTempFields,
       temps: conf.temps,
-      logoPath,
     })
 
     if (previewKey === key) {
@@ -121,26 +119,28 @@
     clearTimeout(previewTimer)
 
     previewTimer = setTimeout(() => {
-      genPreview(file, JSON.parse(JSON.stringify(conf)), logoPath, key)
+      genPreview(file, JSON.parse(JSON.stringify(conf)), key)
     }, 300)
   }
 
-  async function genPreview(file: IFileInfo, conf: IConfig, logoPath: string, key: string) {
+  async function genPreview(file: IFileInfo, conf: IConfig, key: string) {
     try {
-      const exif = await getExitInfo(file.id, file.path)
-      const tool = new PreviewTool({
-        filePath: file.path,
-        exif: exif || {},
+      const res = await window.api.genPreview({
+        path: file.path,
+        name: file.name,
         config: conf,
-        logoPath,
+        maxSize: 720,
       })
-      const data = await tool.genPreview()
+
+      if (res.code !== 0) {
+        throw new Error(res.message || '预览生成失败')
+      }
 
       if (previewKey !== key) {
         return
       }
 
-      previewImg = data
+      previewImg = res.data
       previewLoading = false
     }
     catch (e) {

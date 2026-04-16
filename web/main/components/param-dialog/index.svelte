@@ -3,6 +3,7 @@
   import { ActionItem, FontSetting } from '@components'
   import { Dialog, Input, Message, Popover, Switch } from '@ggchivalrous/db-ui'
   import { config } from '@web/store/config'
+  import { logoList } from '@web/store/logo'
   import { createEventDispatcher } from 'svelte'
 
   import StaticDialog from '../static-dialog/index.svelte'
@@ -15,6 +16,7 @@
   export let type: 'preset' | 'custom' = 'preset'
 
   const dispatch = createEventDispatcher()
+  let cameraBrandList: { name: string, wImg: string, bImg: string }[] = []
   const model: IFieldInfoItem<string | number | boolean> = {
     key: '',
     name: '',
@@ -34,6 +36,7 @@
   const form: IFieldInfoItem<string | number | boolean> = { ...model }
 
   $: listenData(data)
+  $: cameraBrandList = getCameraBrandList($logoList)
 
   function listenData(d: IFieldInfoItem<string | number | boolean>) {
     if (data) {
@@ -102,6 +105,50 @@
       form.bImg = path
     }
   }
+
+  function getCameraBrandList(list: string[]) {
+    const record: Record<string, { name: string, wImg: string, bImg: string }> = {}
+
+    for (const path of list || []) {
+      const fileName = path.split(/[\\/]/).pop() || ''
+      const match = fileName.match(/^(.+)-([wb])\.svg$/i)
+      if (!match) continue
+
+      const key = match[1].toLowerCase()
+      record[key] = record[key] || {
+        name: key,
+        wImg: '',
+        bImg: '',
+      }
+
+      if (match[2].toLowerCase() === 'w') {
+        record[key].wImg = path
+      }
+      else {
+        record[key].bImg = path
+      }
+    }
+
+    return Object.values(record).sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  function formatBrandName(name: string) {
+    const upperBrandRecord: Record<string, string> = {
+      dji: 'DJI',
+    }
+
+    return upperBrandRecord[name] || name[0].toUpperCase() + name.slice(1)
+  }
+
+  function selectCameraBrand(brand: { name: string, wImg: string, bImg: string }) {
+    form.use = true
+    form.forceUse = true
+    form.show = true
+    form.type = 'img'
+    form.value = formatBrandName(brand.name)
+    form.wImg = brand.wImg
+    form.bImg = brand.bImg
+  }
 </script>
 
 <Dialog class='custom-param-dialog' title="{form.key ? '设置' : '添加参数'}{title}" bind:visible appendToBody width='520px' top='8vh'>
@@ -141,6 +188,31 @@
         <svelte:fragment slot='popup'>使用何种类型作为内容显示<br>支持: 文本、图片</svelte:fragment>
         <Switch bind:value={form.type} inactiveValue='text' activeValue='img' inactiveText='文本' activeText='图片' />
       </ActionItem>
+
+      {#if field === 'Make'}
+        <ActionItem title='相机品牌'>
+          <svelte:fragment slot='popup'>选择内置相机品牌 Logo<br>会自动开启自定义和强制替换</svelte:fragment>
+          <div class='camera-brand-list'>
+            {#each cameraBrandList as brand}
+              <div
+                class='camera-brand-item'
+                class:active={form.value === formatBrandName(brand.name)}
+                on:click={() => selectCameraBrand(brand)}
+                on:keypress={() => selectCameraBrand(brand)}
+                role='button'
+                tabindex='-1'
+              >
+                {#if brand.bImg}
+                  <img src='file://{brand.bImg}' alt={brand.name}>
+                {:else if brand.wImg}
+                  <img src='file://{brand.wImg}' alt={brand.name}>
+                {/if}
+                <span>{formatBrandName(brand.name)}</span>
+              </div>
+            {/each}
+          </div>
+        </ActionItem>
+      {/if}
 
       {#if form.type === 'text'}
         <ActionItem title='文本内容'>

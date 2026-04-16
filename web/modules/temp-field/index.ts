@@ -49,6 +49,15 @@ export function getTextTempList(temps: ITemp[], opts?: IGetTempsConfOpts): ITemp
   })).filter(i => i.use)
 }
 
+function toFileUrl(path: string) {
+  if (!path) return ''
+  if (/^(file|data|https?):\/\//.test(path)) return path
+
+  const normalizedPath = path.replaceAll('\\', '/')
+  const prefix = normalizedPath.startsWith('/') ? 'file://' : 'file:///'
+  return `${prefix}${normalizedPath}`
+}
+
 /**
  * 模版 Field 对象信息填充
  * @param tempFieldConf
@@ -78,8 +87,9 @@ async function fillTempFieldInfo(
       tempFieldInfo[field] = JSON.parse(JSON.stringify(_info))
 
       if (field === 'Make' && exif.oriExif.Make) {
-        const wImg = `file://${logoPath}/${exif.oriExif.Make.toLowerCase()}-w.svg`
-        const bImg = `file://${logoPath}/${exif.oriExif.Make.toLowerCase()}-b.svg`
+        const make = exif.oriExif.Make.toLowerCase()
+        const wImg = toFileUrl(`${logoPath}/${make}-w.svg`)
+        const bImg = toFileUrl(`${logoPath}/${make}-b.svg`)
 
         if (await loadImage(wImg).catch(() => false)) {
           tempFieldInfo[field].wImg = wImg

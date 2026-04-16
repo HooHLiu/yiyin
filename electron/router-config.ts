@@ -16,6 +16,7 @@ export default {
   uploadExifImg: 'uploadExifImg',
   pathInfo: 'pathInfo',
   logoList: 'logoList',
+  genPreview: 'genPreview',
   genTextImg: 'genTextImg',
   genMainImgShadow: 'genMainImgShadow',
   drainQueue: 'drainQueue',

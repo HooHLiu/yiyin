@@ -5,6 +5,9 @@ export interface ImageToolOption {
   outputOption: OutputOption
   cachePath: string
   outputPath: string
+  preview?: boolean
+  previewMaxSize?: number
+  config?: Pick<IConfig, 'options' | 'tempFields' | 'customTempFields' | 'temps'>
 }
 
 export interface OutputOption {
