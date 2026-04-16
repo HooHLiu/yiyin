@@ -70,8 +70,75 @@
     flex-direction: column;
   }
 
+  .preview-wrap {
+    height: 240px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .preview-head {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #515255;
+
+    span {
+      flex-shrink: 0;
+    }
+
+    em {
+      margin-left: 10px;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
+      color: #8f9094;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: normal;
+    }
+  }
+
+  .preview-body {
+    height: calc(100% - 22px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+  }
+
+  .preview-tip {
+    color: #8f9094;
+    font-size: 13px;
+  }
+
+  .preview-loading {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #8f9094;
+    font-size: 12px;
+    background-color: var(--bg-color);
+  }
+
   .img-wrap {
-    height: 100%;
+    flex: 1;
+    min-height: 0;
     padding: 0 15px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -86,6 +153,14 @@
       margin-top: 15px;
       border-radius: 4px;
       padding: 6px 12px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      box-sizing: border-box;
+
+      &.active {
+        border-color: var(--active-border-color);
+        color: var(--active-color);
+      }
 
       .img-item-head {
         display: flex;
@@ -100,6 +175,15 @@
         text-wrap: nowrap;
         font-weight: bold;
         color: #515255;
+      }
+
+      .preview-tag {
+        margin-right: 8px;
+        padding: 1px 5px;
+        border-radius: 4px;
+        color: var(--active-color);
+        font-size: 12px;
+        font-weight: normal;
       }
 
       .img-item-info {

@@ -3,7 +3,8 @@
   import { arrToObj, roundDecimalPlaces } from '@common/utils'
   import { ActionItem } from '@components'
   import { ColorPicker, Message, Switch } from '@ggchivalrous/db-ui'
-  import { config } from '@web/store/config'
+  import { PreviewTool } from '@web/modules/preview-tool'
+  import { config, pathInfo } from '@web/store/config'
 
   import { smoothIncrement } from '@web/util/util'
 
@@ -15,10 +16,18 @@
   let handleCount = 0
   let outputDirName = ''
   let imgInfoRecord: Record<string, ImgInfo> = {}
+  let previewTimer: NodeJS.Timeout
+  let previewKey = ''
+  let previewImg = ''
+  let previewLoading = false
+  let previewError = ''
+  let previewFileId = ''
 
   $: getPathName($config.output)
   $: onFileInfoList(fileInfoList)
   $: getHandleCount(imgInfoRecord)
+  $: syncPreviewFile(fileInfoList)
+  $: schedulePreview(fileInfoList, previewFileId, $config, $pathInfo.logo)
 
   window.api['on:progress']((data: Pick<ImgInfo, 'id' | 'progress'>) => {
     if (imgInfoRecord[data.id]) {
@@ -60,6 +69,88 @@
       faildMsg: '',
       ...imgInfoRecord[i.id],
     }))
+  }
+
+  function syncPreviewFile(list: IFileInfo[]) {
+    if (!list.length) {
+      previewFileId = ''
+      return
+    }
+
+    if (!previewFileId || !list.some(i => i.id === previewFileId)) {
+      previewFileId = list[0].id
+    }
+  }
+
+  function selectPreviewFile(id: string) {
+    if (previewFileId === id) {
+      return
+    }
+
+    previewFileId = id
+  }
+
+  function schedulePreview(list: IFileInfo[], fileId: string, conf: IConfig, logoPath: string) {
+    const file = list.find(i => i.id === fileId)
+
+    if (!file?.id || !logoPath) {
+      previewKey = ''
+      previewImg = ''
+      previewLoading = false
+      previewError = ''
+      return
+    }
+
+    const key = JSON.stringify({
+      id: file.id,
+      path: file.path,
+      options: conf.options,
+      tempFields: conf.tempFields,
+      customTempFields: conf.customTempFields,
+      temps: conf.temps,
+      logoPath,
+    })
+
+    if (previewKey === key) {
+      return
+    }
+
+    previewKey = key
+    previewLoading = true
+    previewError = ''
+    clearTimeout(previewTimer)
+
+    previewTimer = setTimeout(() => {
+      genPreview(file, JSON.parse(JSON.stringify(conf)), logoPath, key)
+    }, 300)
+  }
+
+  async function genPreview(file: IFileInfo, conf: IConfig, logoPath: string, key: string) {
+    try {
+      const exif = await getExitInfo(file.id, file.path)
+      const tool = new PreviewTool({
+        filePath: file.path,
+        exif: exif || {},
+        config: conf,
+        logoPath,
+      })
+      const data = await tool.genPreview()
+
+      if (previewKey !== key) {
+        return
+      }
+
+      previewImg = data
+      previewLoading = false
+    }
+    catch (e) {
+      if (previewKey !== key) {
+        return
+      }
+
+      previewLoading = false
+      previewError = `${e || '预览生成失败'}`
+    }
   }
 
   async function changeOutputPath() {
@@ -340,14 +431,49 @@
   </div>
 
   <div class='app-action-right-wrap'>
+    <div class='preview-wrap grass-inset'>
+      <div class='preview-head'>
+        <span>效果预览</span>
+        {#if imgInfoRecord[previewFileId]}
+          <em>{imgInfoRecord[previewFileId].name}</em>
+        {/if}
+      </div>
+
+      <div class='preview-body'>
+        {#if previewImg}
+          <img src={previewImg} alt='效果预览' />
+        {:else if previewError}
+          <span class='preview-tip error'>{previewError}</span>
+        {:else if previewLoading}
+          <span class='preview-tip'>预览生成中...</span>
+        {:else}
+          <span class='preview-tip'>添加图片后显示预览</span>
+        {/if}
+
+        {#if previewLoading && previewImg}
+          <span class='preview-loading'>刷新中...</span>
+        {/if}
+      </div>
+    </div>
+
     <div class='img-wrap grass-inset'>
       <div class='img-list'>
         {#each fileInfoList as i (i.id)}
           {@const record = imgInfoRecord[i.id]}
           {#key i.id}
-            <div class='img-item grass'>
+            <div
+              class='img-item grass'
+              class:active={previewFileId === i.id}
+              on:click={() => selectPreviewFile(i.id)}
+              on:keypress={() => selectPreviewFile(i.id)}
+              role='button'
+              tabindex='0'
+            >
               <div class='img-item-head'>
                 <span class='img-name'>{i.name}</span>
+                {#if previewFileId === i.id}
+                  <span class='preview-tag'>预览中</span>
+                {/if}
                 {#if record.faild}
                   <i class='db-icon-error error'></i>
                 {:else if record.progress < 100}
